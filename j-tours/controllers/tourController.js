@@ -1,42 +1,43 @@
 
-const fs = require('fs')
+const Tour = require('./../models/tourModel')
+// const fs = require('fs') - file system me lexu file
 
 // e kem lexu filen i cili i permban te gjitha tours
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`))
+// const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`))
 
 
 
-exports.checkId = (req, res, next , val)=> {
-    console.log(`Tour id: ${val}`)
+// exports.checkId = (req, res, next , val)=> {
+//     console.log(`Tour id: ${val}`)
 
-    //15 > 12  
+//     15 > 12  
 
-    if(req.params.id*1 > tours.length) {
-        return res.json ({
-            status: "fail",
-            message: "invalid ID"
+//     if(req.params.id*1 > tours.length) {
+//         return res.json ({
+//             status: "fail",
+//             message: "invalid ID"
 
-        })
+//         })
 
-    }
-    next() //duhesh me  thir patjeter n mniddleware 
-}
+//     }
+//     next() duhesh me  thir patjeter n mniddleware 
+// }
 
-exports.checkBody = (req, res, next ) => {
+// exports.checkBody = (req, res, next ) => {
 
 //! - nuk
 
-    if(!req.body.name || !req.body.price ){
-        return res.json({
-            stataus: "fail",
-            message: "Missing name or price"
-        })
-    }
+//     if(!req.body.name || !req.body.price ){
+//         return res.json({
+//             stataus: "fail",
+//             message: "Missing name or price"
+//         })
+//     }
 
 
 
-    next()
-}
+//     next()
+// }
 
 
 
@@ -46,45 +47,51 @@ exports.getAllTours = (req, res) => {
 
     res.json({
         status: "success",
-        requested :req.requestTime,
-        data: { tours }
+        // requested :req.requestTime,
+        // data: { tours }
     })
 }
 
-exports.createTour = (req, res) => {
-    // console.log(req.body)
+exports.createTour = async (req, res) => {
 
-    // ka me u shtu nje dokument i ri
-    const newId = tours[tours.length - 1].id + 1
-    const newTour = Object.assign({ id: newId }, req.body)
-
-    tours.push(newTour)
-    fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`, JSON.stringify(tours), err => {
+    //Opsioni 1
+    // const newTour = new Tour ({})
+    // newTour.save()
+     
+    try{
+        const newTour = await Tour.create(req.body)
         res.json({
-            status: "success",
+            status: "success" ,
             data: {
-                tour: newTour
+                tour:newTour
             }
         })
+    }
 
-    })
+    catch (err) {
+        res.json({
+            status: "fail" , 
+            message : err
+        })
+    }
+
 }
 
 exports.getTour = (req, res) => {
     console.log(req.params)
 
     // po e marrim id-n dhe po e konvertojm ne string
-    const id = req.params.id * 1
-    const tour = tours.find(el => el.id === id)
+    // const id = req.params.id * 1
+    // const tour = tours.find(el => el.id === id)
 
  
 
-    res.json({
-        status: "success",
-        data: {
-            tour
-        }
-    })
+    // res.json({
+    //     status: "success",
+    //     data: {
+    //         tour
+    //     }
+    // })
 
 }
 
