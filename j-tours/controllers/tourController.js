@@ -52,6 +52,7 @@ exports.getAllTours = async (req, res) => {
 
         res.json({
         status: "success",
+        result: tours.length ,  //tregon sa tours jan
         data: { tours }
 
         // requested :req.requestTime,
